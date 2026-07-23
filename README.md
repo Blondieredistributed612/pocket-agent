@@ -8,7 +8,9 @@ Termux and llama.cpp. No cloud, no API key, nothing leaving the device.
 > [Known constraints](#known-constraints) for what you should expect on tablet
 > hardware, and [Roadmap](#roadmap) for where it is going.
 >
-> No throughput figures are published yet — I would rather leave that blank
+> The loop itself **is** verified: `python test_agent.py` runs 18 checks against
+> a scripted backend and passes on desktop Python, no model or device needed.
+> Throughput figures are not published yet — I would rather leave that blank
 > than guess at it.
 
 ---
@@ -196,9 +198,23 @@ machine — no Android, no llama.cpp, no download:
 python test_agent.py
 ```
 
-It runs the loop against a scripted fake backend and checks that a plain answer
-terminates, a tool call executes, the step cap stops a looping model, the shell
-blocklist holds, and paths outside the home directory are refused.
+```
+1. Tool-call parser        5 checks
+2. Safety guards           4 checks
+3. File tools round-trip   1 check
+4. Loop terminates         2 checks
+5. Tool then answer        2 checks
+6. Step cap                2 checks
+7. Fallback heuristic      2 checks
+```
+
+It runs the loop against a scripted backend and checks that a plain answer
+terminates, a tool call executes and returns, the step cap stops a looping
+model, the shell blocklist holds, unknown tools are rejected, and paths outside
+the home directory are refused.
+
+Passes on Python 3.11 (Windows) and 3.12 (Linux). `httpx` is imported lazily,
+so the tests need no dependencies at all.
 
 A model server is only needed for real inference.
 
