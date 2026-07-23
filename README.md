@@ -110,6 +110,26 @@ cmake --build build --config Release -j $(nproc)
 `GGML_CPU_KLEIDIAI=ON` enables ARM's KleidiAI kernels. It is **not** on by
 default and it is the difference between usable and painful on these chips.
 
+> **Build inside Termux's home directory.** Cloning or compiling under Android's
+> shared storage (`/sdcard`, `/storage/emulated/0`) triggers a permission error
+> during the build. Stay in `~`.
+
+**Vulkan is worth trying instead of, or alongside, CPU.** llama.cpp's Vulkan
+backend can offload to the phone's Adreno or Mali GPU through the standard
+`libvulkan.so`, no root required, and reports from mid-range devices are
+substantially faster than CPU-only. I have not tested this path — it is on the
+roadmap — but if CPU throughput disappoints you, look here before giving up:
+
+```bash
+pkg install vulkan-loader-android vulkan-headers shaderc
+cmake -B build-gpu -DGGML_VULKAN=ON
+# then run with -ngl 99 to offload layers
+```
+
+Known snags: some Adreno drivers fail on Q4_K math and need the Mesa Turnip
+driver instead; `vulkaninfo` reporting no ICD means no usable driver is exposed
+to Termux, in which case fall back to CPU with `-ngl 0`.
+
 ### 4. Model
 
 ```bash
@@ -232,6 +252,8 @@ test_agent.py   offline checks — no model or device required
 ## Roadmap
 
 - [ ] Benchmark and publish real throughput figures
+- [ ] Vulkan GPU offload path — likely the answer to the thermal
+      and responsiveness problem below
 - [ ] Telegram front-end via long polling — no static IP, works off Wi-Fi,
       and sidesteps the on-device storage cost entirely
 - [ ] Battery-aware scheduling — defer heavy calls when unplugged
@@ -266,6 +288,31 @@ least at 4B on current tablet silicon.
 None of this is a llama.cpp or Qwen problem. It is what a 4B model costs on
 hardware built for a different job, and it will keep improving as both the
 runtimes and the chips do.
+
+## Related projects
+
+This space is better covered than it first appears. Worth knowing before you
+start, and worth saying plainly rather than implying I am first:
+
+| Project | What it does |
+|---|---|
+| [llama.cpp `docs/android.md`](https://github.com/ggml-org/llama.cpp/blob/master/docs/android.md) | The official Termux build instructions. Start here. |
+| [sanatani-hackers/Llama.cpp-termux](https://github.com/sanatani-hackers/Llama.cpp-termux) | One-click installer with Vulkan GPU acceleration for Snapdragon. Far more thorough on the *inference* side than this repo. |
+| [JackZeng0208/llama.cpp-android-tutorial](https://github.com/JackZeng0208/llama.cpp-android-tutorial) | Detailed Snapdragon/OpenCL walkthrough. |
+| [clixgvvv/AndroidLLMServerScript](https://github.com/clixgvvv/AndroidLLMServerScript) | Minimal script to stand up a local LLM server on Android. |
+| PocketPal, Google AI Edge Gallery, AnythingLLM | GUI apps if you want a chat interface rather than a terminal. |
+
+**What this repo adds that those do not:** they get a model *running*. This one
+is about what happens after that — a tool-calling loop built around the specific
+ways a 4B model fails, plus device tools (notifications, TTS, shell) rather than
+a chat window. If you only want inference on Android, the projects above are
+better maintained and better tested than this one.
+
+There are also several Termux-based *coding* agents (running Claude Code,
+OpenCode and similar on-device). Those solve a different problem: they wrap a
+frontier model for programming. This is general-purpose and local-first.
+
+---
 
 ## Security
 
